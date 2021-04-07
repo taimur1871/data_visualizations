@@ -11,13 +11,13 @@ df = pd.read_csv('A2658')
 # draw charts
 fig = make_subplots(rows = 2, cols = 2,
                     specs=[[{"type": "xy"}, {"type": "domain"}],
-                           [{"type": "scattermapbox"}, {"type": "domain"}]],
+                           [{"type": "scattergeo"}, {"type": "domain"}]],
                     )
 
 fig.add_trace(go.Scatter(x = df['adj_x'], y = df['adj_y'],
                          mode='markers'), row=1, col=1)
 
-fig.add_trace(go.Scattermapbox(lat=df_map.Latitude, lon=df_map.Longitude,
+fig.add_trace(go.Scattergeo(lat=df_map.Latitude, lon=df_map.Longitude,
                             text=df_map['Bit Serial Number'],
                             mode='markers'), row=2, col=1)
 
@@ -38,8 +38,23 @@ fig.update_geos(
     projection_scale=5,
     center={'lat':35.4676, 'lon':-97.5164},
     subunitcolor='black',
-    domain_row=2,
-    domain_column=1,
     )
 
 fig.show()
+
+'''
+fig = go.Figure(data=go.Scattergeo(
+    lat=df_map.Latitude,
+    lon=df_map.Longitude,
+    text=df_map['Bit Serial Number'],
+    mode='markers'))
+
+
+fig.update_layout(
+    title='Top 100 Wells',
+    geo_scope='usa',
+    geo_projection={'scale':5},
+    geo_center={'lat':35.4676, 'lon':-97.5164},
+    #style = "stamen-terrain"
+)
+'''
