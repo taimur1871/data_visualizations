@@ -1,4 +1,6 @@
-import plotly.graph_objects as go
+# python 3
+
+# import modules
 import pandas as pd
 import plotly.express as px
 
