@@ -16,7 +16,8 @@ fig.update_layout(
     title='Top 100 Wells',
     geo_scope='usa',
     geo_projection={'scale':5},
-    geo_center={'lat':35.4676, 'lon':-97.5164}
+    geo_center={'lat':35.4676, 'lon':-97.5164},
+    #style = "stamen-terrain"
 )
 
 fig.show()
