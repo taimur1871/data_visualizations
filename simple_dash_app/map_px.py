@@ -3,8 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 import data_exploration
+import random_coord
 
-df_map = data_exploration.df_on_btm[['Bit Type', 'Bit Serial Number', 'Latitude', 'Longitude', 'Distance']]
+#df_map = data_exploration.df_on_btm[['Bit Type', 'Bit Serial Number', 'Latitude', 'Longitude', 'Distance']]
+df_map = random_coord.df
 
 # make map
 #fig = px.scatter_mapbox(df_map, lat='Latitude', lon='Longitude', hover_name='Bit Type', hover_data=['Bit Serial Number'],
