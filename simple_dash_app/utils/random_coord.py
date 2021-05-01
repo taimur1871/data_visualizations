@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 
 # set coordinate range
-max_lat = 41.986046
-min_lat = 41.056583
-max_long = -89.766294
-min_long = -92.238217
+max_lat = 49.906
+min_lat = 39.894
+max_long = -105.072
+min_long = -115.097
 
 # random data
 fake_data = []

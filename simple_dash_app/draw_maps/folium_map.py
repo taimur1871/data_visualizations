@@ -29,4 +29,4 @@ for lat, lon, btype in zip(df_map['Latitude'], df_map['Longitude'], df_map['Bit 
         #fill_color=rainbow[int(cluster)-1],
         fill_opacity=0.7).add_to(map_clusters)
        
-map_clusters.save('test_map.html')
+map_clusters.save('./saved_html/test_map.html')
