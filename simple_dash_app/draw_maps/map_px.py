@@ -3,7 +3,7 @@
 import pandas as pd
 import plotly.express as px
 
-import random_coord
+from utils import random_coord
 
 # get data
 df_map = random_coord.df

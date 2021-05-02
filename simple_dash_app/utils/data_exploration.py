@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 df_ini = pd.read_csv(
-    '/home/taimur/Documents/DarkCirrus Projects/Analyzing Bit Records/Mid-Con ToolRun.csv')
+    '/home/taimur/Documents/DarkCirrus Projects/Analyzing Bit Records/data/Mid-Con ToolRun.csv')
 df_ini = df_ini[df_ini['Bit Size']>10]
 df_on_btm = df_ini[df_ini['Depth Out'] < 7000]
 df_bits = df_on_btm['Bit Serial Number'].groupby(df_on_btm['Bit Mfg'])
