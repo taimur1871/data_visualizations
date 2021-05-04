@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<title>Automatic Dull Grading</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+body,h1 {font-family: "Raleway", Arial, sans-serif}
+h1 {letter-spacing: 6px}
+.w3-row-padding img {margin-bottom: 12px}
+
+.loader {
+  display: none;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.loading {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  animation: spin 1s infinite ease-in;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
+
+<script type="text/javascript">
+  function spinner() {
+      document.getElementsByClassName("loader")[0].style.display = "block";
+  }
+</script>
+
+<body>
+<!-- !PAGE CONTENT! -->
+<div class="w3-content" style="max-width:1500px">
+<div id="loader"></div>
+
+<!-- Header -->
+<header class="w3-panel w3-center w3-opacity" style="padding:32px 32px">
+  <h1 class="w3-xlarge">Welcome to Automatic Grading</h1>
+  
+  <div class="w3-padding-16">
+    <div class="w3-bar w3-border">
+      <a href="/test" class="w3-bar-item w3-button">Home</a>
+      <a href="#" class="w3-bar-item w3-button">Grade Bit</a>
+      <a href="#" class="w3-bar-item w3-button">View Reports</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small">Offset Analysis</a>
+    </div>
+  </div>
+</header>
+
+<!-- Photo Grid -->
+<div class="w3-row-padding w3-grayscale" style="margin-bottom:64px">
+  <div class="w3-half" style="margin-bottom:32px">
+    <h3>Enter Bit Information</h3>
+        <p>This section is optional except serial number and well name</p>
+
+        <form style="text-align: center;" action="/grade" enctype="multipart/form-data" method="GET" >
+            <p>Serial Number</p><input name="SN" type="text"><br>
+            <p>Well Name</p><input name="well" type="text"><br>
+            <p>Depth In</p><input name="in" type="text"><br>
+            <p>Interval Drilled</p><input name="drilled" type="text"><br>
+            <p>Hours</p><input name="hours" type="text"><br>
+            <input type="submit" onclick="spinner()">
+        </form>
+        <div class="loader">
+        <div class="loading"></div>
+  </div>     
+</div>
+
+  <div class="w3-half" style="margin-bottom:32px">
+    <h3>Things we are working on:</h3>
+        <p>We are constantly improving the system based on feedback and input data, the following is a list of enhancements and projects planned</p>
+        <ul>
+            <li>Improve ringout detection</li>
+            <li>Better estimate of dull grade in case of ringout</li>
+            <li>Offset analysis dashboard</li>
+            <li>Interactive dull characteristics charts</li><br>
+        </ul>
+        <div>
+            <h4>How to maximize cutter detection?</h4>
+            <p>We cannot grade what we cannot see, to maximize grading accuracy take blade pictures as close as possbile with all cutters visible, see example below</p>         
+            
+        </div>
+        <div class="w3-center">
+          <img style=" width: 35%;" src="../static/b2.jpg">
+        </div>
+  </div>
+</div>
+  
+<!-- End Page Content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-padding-32 w3-light-grey w3-center w3-large"> 
+  <i class="fa fa-linkedin w3-hover-opacity"></i>
+</footer>
+
+</body>
+</html>
+

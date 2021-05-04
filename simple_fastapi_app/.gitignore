@@ -1,0 +1,9 @@
+# cython file
+*.pyc
+__pycache__
+
+# image files
+*.jpg
+*.png
+*.JPEG
+*.JPEG
