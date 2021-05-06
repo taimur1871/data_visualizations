@@ -53,12 +53,11 @@ h1 {letter-spacing: 6px}
 
 <!-- Header -->
 <header class="w3-panel w3-center w3-opacity" style="padding:32px 32px">
-  <h1 class="w3-xlarge">Welcome to Automatic Grading</h1>
+  <h1 class="w3-xlarge">Offset Analysis & Bit Selection</h1>
   
   <div class="w3-padding-16">
     <div class="w3-bar w3-border">
       <a href="/test" class="w3-bar-item w3-button">Home</a>
-      <a href="#" class="w3-bar-item w3-button">Grade Bit</a>
       <a href="#" class="w3-bar-item w3-button">View Reports</a>
       <a href="#" class="w3-bar-item w3-button w3-hide-small">Offset Analysis</a>
     </div>
@@ -68,15 +67,12 @@ h1 {letter-spacing: 6px}
 <!-- Photo Grid -->
 <div class="w3-row-padding w3-grayscale" style="margin-bottom:64px">
   <div class="w3-half" style="margin-bottom:32px">
-    <h3>Enter Bit Information</h3>
-        <p>This section is optional except serial number and well name</p>
-
-        <form style="text-align: center;" action="/grade" enctype="multipart/form-data" method="GET" >
-            <p>Serial Number</p><input name="SN" type="text"><br>
-            <p>Well Name</p><input name="well" type="text"><br>
-            <p>Depth In</p><input name="in" type="text"><br>
-            <p>Interval Drilled</p><input name="drilled" type="text"><br>
-            <p>Hours</p><input name="hours" type="text"><br>
+    <h3>Upload Drill Bit Data Files</h3>
+        <p>The app accepts csv, xls or xslx files</p>
+        <p>To use the map feature make sure the files contain latitude and longitude data</p><br>
+        
+        <form style="text-align: center;" action="/uploadfiles/" enctype="multipart/form-data" method="post" >
+            <input name="files" type="file" multiple>
             <input type="submit" onclick="spinner()">
         </form>
         <div class="loader">
@@ -85,19 +81,13 @@ h1 {letter-spacing: 6px}
 </div>
 
   <div class="w3-half" style="margin-bottom:32px">
-    <h3>Things we are working on:</h3>
-        <p>We are constantly improving the system based on feedback and input data, the following is a list of enhancements and projects planned</p>
+    <h3>How do we do the analysis</h3>
         <ul>
             <li>Improve ringout detection</li>
             <li>Better estimate of dull grade in case of ringout</li>
             <li>Offset analysis dashboard</li>
             <li>Interactive dull characteristics charts</li><br>
         </ul>
-        <div>
-            <h4>How to maximize cutter detection?</h4>
-            <p>We cannot grade what we cannot see, to maximize grading accuracy take blade pictures as close as possbile with all cutters visible, see example below</p>         
-            
-        </div>
         <div class="w3-center">
           <img style=" width: 35%;" src="../static/b2.jpg">
         </div>
