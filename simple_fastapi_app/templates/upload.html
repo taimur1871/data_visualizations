@@ -71,8 +71,8 @@ h1 {letter-spacing: 6px}
         <p>The app accepts csv, xls or xslx files</p>
         <p>To use the map feature make sure the files contain latitude and longitude data</p><br>
         
-        <form style="text-align: center;" action="/uploadfiles/" enctype="multipart/form-data" method="post" >
-            <input name="files" type="file" multiple>
+        <form style="text-align: left;" action="/uploadfiles/" enctype="multipart/form-data" method="post" >
+            <input name="files" type="file" multiple><br><br>
             <input type="submit" onclick="spinner()">
         </form>
         <div class="loader">
