@@ -11,11 +11,8 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
 import dash_html_components as html
 
-from pages import (
-    overview,
-    upload_data,
-    analysis,
-)
+# read data
+df = pd.read_csv('./data/Mid-Con ToolRun.csv')
 
 # get relative data folder
 PATH = pathlib.Path(__file__).parent
@@ -26,103 +23,150 @@ app = dash.Dash(
 )
 server = app.server
 
-# Describe the layout/ UI of the app
+# Create app layout
 app.layout = html.Div(
-    [dcc.Location(id="url", refresh=False), html.Div(id="page-content")]
+    [
+        dcc.Store(id="aggregate_data"),
+        # empty Div to trigger javascript file for graph resizing
+        html.Div(id="output-clientside"),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.H3(
+                                    "Offset Analysis",
+                                    style={"margin-bottom": "0px"},
+                                ),
+                            ]
+                        )
+                    ],
+                    className="one-half column",
+                    id="title",
+                ),
+                html.Div(
+                    [
+                        html.A(
+                            html.Button("Upload Another", id="upload"),
+                            href="http:www.darkcirrusai.com/dull-grading-app",
+                        )
+                    ],
+                    className="one-third column",
+                    id="button",
+                ),
+            ],
+            id="header",
+            className="row flex-display",
+            style={"margin-bottom": "25px"},
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.P(
+                            "Filter by construction date (or select range in histogram):",
+                            className="control_label",
+                        ),
+                        dcc.RangeSlider(
+                            id="year_slider",
+                            min=1960,
+                            max=2017,
+                            value=[1990, 2010],
+                            className="dcc_control",
+                        ),
+                        html.P("Filter by well status:", className="control_label"),
+                        dcc.RadioItems(
+                            id="well_status_selector",
+                            options=[
+                                {"label": "All ", "value": "all"},
+                                {"label": "Active only ", "value": "active"},
+                                {"label": "Customize ", "value": "custom"},
+                            ],
+                            value="active",
+                            labelStyle={"display": "inline-block"},
+                            className="dcc_control",
+                        ),
+                    ],
+                    className="pretty_container four columns",
+                    id="cross-filter-options",
+                ),
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.Div(
+                                    [html.H6(id="well_text"), html.P("No. of Wells")],
+                                    id="wells",
+                                    className="mini_container",
+                                ),
+                                html.Div(
+                                    [html.H6(id="gasText"), html.P("Gas")],
+                                    id="gas",
+                                    className="mini_container",
+                                ),
+                                html.Div(
+                                    [html.H6(id="oilText"), html.P("Oil")],
+                                    id="oil",
+                                    className="mini_container",
+                                ),
+                                html.Div(
+                                    [html.H6(id="waterText"), html.P("Water")],
+                                    id="water",
+                                    className="mini_container",
+                                ),
+                            ],
+                            id="right-column",
+                            className="16 columns",
+                        ),
+                    ],
+                ),
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.P("Filter by Bit Size:", className="control_label"),
+                                dcc.Dropdown(
+                                id="well_names",
+                                options=[
+                                    {"label": "All ", "value": "all"},
+                                    {"label": "Productive only ", "value": "productive"},
+                                    {"label": "Customize ", "value": "custom"},
+                                    ],
+                                multi=True,
+                                value=list((1,2,3)),
+                                className="dcc_control",
+                                ),
+                            ],
+                        id="other-right-column",
+                        className="pretty_container 8 columns",
+                        ),
+                    ],
+                ),
+            ],
+            className="row flex-display",
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [dcc.Graph(id="second_graph")],
+                    className="pretty_container five columns",
+                ),
+                html.Div(
+                    [dcc.Graph(id="individual_graph")],
+                    className="pretty_container five columns",
+                ),
+            ],
+            className="row flex-display",
+        ),
+    ],
+    id="mainContainer",
+    style={"display": "flex", "flex-direction": "column"},
 )
 
-# Update page
-@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
-def display_page(pathname):
-    if pathname == "/simple_dash_app/upload_data":
-        return upload_data.create_layout(app)
-    else:
-        return analysis.create_layout(app)
-
-
-if __name__ == "__main__":
-    app.run_server(debug=True)
-
-# Helper functions
-def human_format(num):
-    if num == 0:
-        return "0"
-
-    magnitude = int(math.log(num, 1000))
-    mantissa = str(int(num / (1000 ** magnitude)))
-    return mantissa + ["", "K", "M", "G", "T", "P"][magnitude]
-
-
-def filter_dataframe(df, well_statuses, well_types, year_slider):
-    dff = df[
-        df["Well_Status"].isin(well_statuses)
-        & df["Well_Type"].isin(well_types)
-        & (df["Date_Well_Completed"] > dt.datetime(year_slider[0], 1, 1))
-        & (df["Date_Well_Completed"] < dt.datetime(year_slider[1], 1, 1))
-    ]
-    return dff
-
-
-def produce_individual(api_well_num):
-    try:
-        points[api_well_num]
-    except:
-        return None, None, None, None
-
-    index = list(
-        range(min(points[api_well_num].keys()), max(points[api_well_num].keys()) + 1)
-    )
-    gas = []
-    oil = []
-    water = []
-
-    for year in index:
-        try:
-            gas.append(points[api_well_num][year]["Gas Produced, MCF"])
-        except:
-            gas.append(0)
-        try:
-            oil.append(points[api_well_num][year]["Oil Produced, bbl"])
-        except:
-            oil.append(0)
-        try:
-            water.append(points[api_well_num][year]["Water Produced, bbl"])
-        except:
-            water.append(0)
-
-    return index, gas, oil, water
-
-
-def produce_aggregate(selected, year_slider):
-
-    index = list(range(max(year_slider[0], 1985), 2016))
-    gas = []
-    oil = []
-    water = []
-
-    for year in index:
-        count_gas = 0
-        count_oil = 0
-        count_water = 0
-        for api_well_num in selected:
-            try:
-                count_gas += points[api_well_num][year]["Gas Produced, MCF"]
-            except:
-                pass
-            try:
-                count_oil += points[api_well_num][year]["Oil Produced, bbl"]
-            except:
-                pass
-            try:
-                count_water += points[api_well_num][year]["Water Produced, bbl"]
-            except:
-                pass
-        gas.append(count_gas)
-        oil.append(count_oil)
-        water.append(count_water)
-
-    return index, gas, oil, water
-
+# helper function
+def aggregate_data(dataframe):
+    return dataframe['Bit Size'].value_counts().head(3).to_list()
 
 # Create callbacks
 app.clientside_callback(
@@ -131,44 +175,25 @@ app.clientside_callback(
     [Input("count_graph", "figure")],
 )
 
-
 @app.callback(
     Output("aggregate_data", "data"),
     [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
+        Input("df", "value")
     ],
 )
-def update_production_text(well_statuses, well_types, year_slider):
-
-    dff = filter_dataframe(df, well_statuses, well_types, year_slider)
-    selected = dff["API_WellNo"].values
-    index, gas, oil, water = produce_aggregate(selected, year_slider)
-    return [human_format(sum(gas)), human_format(sum(oil)), human_format(sum(water))]
-
+def update_data(df):
+    return df['Bit Size'].value_counts().head(3).to_list()
 
 # Radio -> multi
 @app.callback(
-    Output("well_statuses", "value"), [Input("well_status_selector", "value")]
+    Output("well_statuses", "value"), [Input("bit_size_selector", "value")]
 )
-def display_status(selector):
-    if selector == "all":
-        return list(WELL_STATUSES.keys())
-    elif selector == "active":
-        return ["AC"]
+def update_status(bit_sizes):
+    if bit_sizes == "all":
+        return bit_sizes
+    elif bit_sizes == 8.75:
+        return 8.75
     return []
-
-
-# Radio -> multi
-@app.callback(Output("well_types", "value"), [Input("well_type_selector", "value")])
-def display_type(selector):
-    if selector == "all":
-        return list(WELL_TYPES.keys())
-    elif selector == "productive":
-        return ["GD", "GE", "GW", "IG", "IW", "OD", "OE", "OW"]
-    return []
-
 
 # Slider -> count graph
 @app.callback(Output("year_slider", "value"), [Input("count_graph", "selectedData")])
@@ -179,21 +204,6 @@ def update_year_slider(count_graph_selected):
 
     nums = [int(point["pointNumber"]) for point in count_graph_selected["points"]]
     return [min(nums) + 1960, max(nums) + 1961]
-
-
-# Selectors -> well text
-@app.callback(
-    Output("well_text", "children"),
-    [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
-    ],
-)
-def update_well_text(well_statuses, well_types, year_slider):
-
-    dff = filter_dataframe(df, well_statuses, well_types, year_slider)
-    return dff.shape[0]
 
 
 @app.callback(
@@ -212,17 +222,16 @@ def update_text(data):
 @app.callback(
     Output("main_graph", "figure"),
     [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
+        Input("bit_size", "value"),
+        Input("depth_in", "value"),
     ],
-    [State("lock_selector", "value"), State("main_graph", "relayoutData")],
+    [State("fm_selector", "value"), State("main_graph", "relayoutData")],
 )
 def make_main_figure(
-    well_statuses, well_types, year_slider, selector, main_graph_layout
+    bit_size, depth_in, fm_selector, main_graph_layout
 ):
 
-    dff = filter_dataframe(df, well_statuses, well_types, year_slider)
+    dff = filter_dataframe(df, bit_size, depth_in, fm_selector)
 
     traces = []
     for well_type, dfff in dff.groupby("Well_Type"):
@@ -312,180 +321,6 @@ def make_individual_figure(main_graph_hover):
         layout_individual["title"] = dataset[chosen[0]]["Well_Name"]
 
     figure = dict(data=data, layout=layout_individual)
-    return figure
-
-
-# Selectors, main graph -> aggregate graph
-@app.callback(
-    Output("aggregate_graph", "figure"),
-    [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
-        Input("main_graph", "hoverData"),
-    ],
-)
-def make_aggregate_figure(well_statuses, well_types, year_slider, main_graph_hover):
-
-    layout_aggregate = copy.deepcopy(layout)
-
-    if main_graph_hover is None:
-        main_graph_hover = {
-            "points": [
-                {"curveNumber": 4, "pointNumber": 569, "customdata": 31101173130000}
-            ]
-        }
-
-    chosen = [point["customdata"] for point in main_graph_hover["points"]]
-    well_type = dataset[chosen[0]]["Well_Type"]
-    dff = filter_dataframe(df, well_statuses, well_types, year_slider)
-
-    selected = dff[dff["Well_Type"] == well_type]["API_WellNo"].values
-    index, gas, oil, water = produce_aggregate(selected, year_slider)
-
-    data = [
-        dict(
-            type="scatter",
-            mode="lines",
-            name="Gas Produced (mcf)",
-            x=index,
-            y=gas,
-            line=dict(shape="spline", smoothing="2", color="#F9ADA0"),
-        ),
-        dict(
-            type="scatter",
-            mode="lines",
-            name="Oil Produced (bbl)",
-            x=index,
-            y=oil,
-            line=dict(shape="spline", smoothing="2", color="#849E68"),
-        ),
-        dict(
-            type="scatter",
-            mode="lines",
-            name="Water Produced (bbl)",
-            x=index,
-            y=water,
-            line=dict(shape="spline", smoothing="2", color="#59C3C3"),
-        ),
-    ]
-    layout_aggregate["title"] = "Aggregate: " + WELL_TYPES[well_type]
-
-    figure = dict(data=data, layout=layout_aggregate)
-    return figure
-
-
-# Selectors, main graph -> pie graph
-@app.callback(
-    Output("pie_graph", "figure"),
-    [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
-    ],
-)
-def make_pie_figure(well_statuses, well_types, year_slider):
-
-    layout_pie = copy.deepcopy(layout)
-
-    dff = filter_dataframe(df, well_statuses, well_types, year_slider)
-
-    selected = dff["API_WellNo"].values
-    index, gas, oil, water = produce_aggregate(selected, year_slider)
-
-    aggregate = dff.groupby(["Well_Type"]).count()
-
-    data = [
-        dict(
-            type="pie",
-            labels=["Gas", "Oil", "Water"],
-            values=[sum(gas), sum(oil), sum(water)],
-            name="Production Breakdown",
-            text=[
-                "Total Gas Produced (mcf)",
-                "Total Oil Produced (bbl)",
-                "Total Water Produced (bbl)",
-            ],
-            hoverinfo="text+value+percent",
-            textinfo="label+percent+name",
-            hole=0.5,
-            marker=dict(colors=["#fac1b7", "#a9bb95", "#92d8d8"]),
-            domain={"x": [0, 0.45], "y": [0.2, 0.8]},
-        ),
-        dict(
-            type="pie",
-            labels=[WELL_TYPES[i] for i in aggregate.index],
-            values=aggregate["API_WellNo"],
-            name="Well Type Breakdown",
-            hoverinfo="label+text+value+percent",
-            textinfo="label+percent+name",
-            hole=0.5,
-            marker=dict(colors=[WELL_COLORS[i] for i in aggregate.index]),
-            domain={"x": [0.55, 1], "y": [0.2, 0.8]},
-        ),
-    ]
-    layout_pie["title"] = "Production Summary: {} to {}".format(
-        year_slider[0], year_slider[1]
-    )
-    layout_pie["font"] = dict(color="#777777")
-    layout_pie["legend"] = dict(
-        font=dict(color="#CCCCCC", size="10"), orientation="h", bgcolor="rgba(0,0,0,0)"
-    )
-
-    figure = dict(data=data, layout=layout_pie)
-    return figure
-
-
-# Selectors -> count graph
-@app.callback(
-    Output("count_graph", "figure"),
-    [
-        Input("well_statuses", "value"),
-        Input("well_types", "value"),
-        Input("year_slider", "value"),
-    ],
-)
-def make_count_figure(well_statuses, well_types, year_slider):
-
-    layout_count = copy.deepcopy(layout)
-
-    dff = filter_dataframe(df, well_statuses, well_types, [1960, 2017])
-    g = dff[["API_WellNo", "Date_Well_Completed"]]
-    g.index = g["Date_Well_Completed"]
-    g = g.resample("A").count()
-
-    colors = []
-    for i in range(1960, 2018):
-        if i >= int(year_slider[0]) and i < int(year_slider[1]):
-            colors.append("rgb(123, 199, 255)")
-        else:
-            colors.append("rgba(123, 199, 255, 0.2)")
-
-    data = [
-        dict(
-            type="scatter",
-            mode="markers",
-            x=g.index,
-            y=g["API_WellNo"] / 2,
-            name="All Wells",
-            opacity=0,
-            hoverinfo="skip",
-        ),
-        dict(
-            type="bar",
-            x=g.index,
-            y=g["API_WellNo"],
-            name="All Wells",
-            marker=dict(color=colors),
-        ),
-    ]
-
-    layout_count["title"] = "Completed Wells/Year"
-    layout_count["dragmode"] = "select"
-    layout_count["showlegend"] = False
-    layout_count["autosize"] = True
-
-    figure = dict(data=data, layout=layout_count)
     return figure
 
 # Main

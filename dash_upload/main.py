@@ -15,7 +15,9 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-app.layout = html.Div([
+app.layout = html.Center(
+    html.Div([
+        html.H2('Upload the files'),
     dcc.Upload(
         id='upload-data',
         children=html.Div([
@@ -23,7 +25,7 @@ app.layout = html.Div([
             html.A('Select Files')
         ]),
         style={
-            'width': '100%',
+            'width': '50%',
             'height': '60px',
             'lineHeight': '60px',
             'borderWidth': '1px',
@@ -36,7 +38,7 @@ app.layout = html.Div([
         multiple=True
     ),
     html.Div(id='output-data-upload'),
-])
+]))
 
 
 def parse_contents(contents, filename, date):
@@ -93,7 +95,6 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
             parse_contents(c, n, d) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         return children
-
 
 
 if __name__ == '__main__':
