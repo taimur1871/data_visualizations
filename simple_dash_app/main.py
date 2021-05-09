@@ -79,6 +79,23 @@ app.layout = html.Div(
     ]
 )
 
+# call backs
+@app.callback(
+    Output('map-w-radio', 'figure'),
+    Input('application', 'value'),
+    Input('bit-size-dropdown','value'))
+def update_figure(application, bit_size):
+    filtered_df = df[(df['Dir Type'] == application) & (df['Bit Size']==bit_size)]
+
+    fig = px.scatter_mapbox(filtered_df, lat='Latitude', lon='Longitude', 
+                            hover_data=['Official Well Name'], 
+                            color_discrete_sequence=["red"],zoom=6)
+
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(clickmode='event+select')
+    fig.update_layout(transition_duration=0)
+
+    return fig
 
 @app.callback(
     Output('graph-with-slider', 'figure'),
@@ -89,21 +106,6 @@ def update_figure(bit_size, dir_type):
 
     fig = px.scatter(filtered_df, x="Distance", y="ROP", color="Bit Mfg")
 
-    fig.update_layout(transition_duration=0)
-
-    return fig
-
-@app.callback(
-    Output('map-w-radio', 'figure'),
-    Input('application', 'value'),
-    Input('bit-size-dropdown','value'))
-def update_figure(application, bit_size):
-    filtered_df = df[(df['Dir Type'] == application) & (df['Bit Size']==bit_size)]
-
-    fig = px.scatter_mapbox(filtered_df, lat='Latitude', lon='Longitude',
-                            color_discrete_sequence=["red"],zoom=6)
-
-    fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(transition_duration=0)
 
     return fig
