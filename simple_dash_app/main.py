@@ -80,6 +80,7 @@ app.layout = html.Div(
 )
 
 # call backs
+# function for map
 @app.callback(
     Output('map-w-radio', 'figure'),
     Input('application', 'value'),
@@ -97,6 +98,7 @@ def update_figure(application, bit_size):
 
     return fig
 
+# function for the scatter plot tied to map
 @app.callback(
     Output('graph-with-slider', 'figure'),
     Input('year-slider', 'value'),

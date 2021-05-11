@@ -21,7 +21,7 @@ styles = {
 df = pd.read_csv('/home/taimur/Documents/DarkCirrus Projects/Analyzing Bit Records/data_visualizations/simple_dash_app/data/Mid-Con ToolRun.csv')
 
 fig = px.scatter_mapbox(df, lat='Latitude', lon='Longitude', hover_data=['Official Well Name'],
-                    color_discrete_sequence=["red"],zoom=6)
+                    color_discrete_sequence=["red"],zoom=10)
 
 fig.update_layout(mapbox_style="open-street-map")
 fig.update_layout(clickmode='event+select')
@@ -35,72 +35,32 @@ app.layout = html.Div([
     ),
 
     html.Div(className='row', children=[
-        html.Div([
-            dcc.Markdown("""
-                **Hover Data**
-
-                Mouse over values in the graph.
-            """),
-            html.Pre(id='hover-data', style=styles['pre'])
-        ], className='three columns'),
-
-        html.Div([
-            dcc.Markdown("""
-                **Click Data**
-
-                Click on points in the graph.
-            """),
-            html.Pre(id='click-data', style=styles['pre']),
-        ], className='three columns'),
-
+        
         html.Div([
             dcc.Markdown("""
                 **Selection Data**
-
-                Choose the lasso or rectangle tool in the graph's menu
-                bar and then select points in the graph.
-
-                Note that if `layout.clickmode = 'event+select'`, selection data also
-                accumulates (or un-accumulates) selected data if you hold down the shift
-                button while clicking.
             """),
             html.Pre(id='selected-data', style=styles['pre']),
-        ], className='three columns'),
+        ], className='five columns'),
 
         html.Div([
             dcc.Markdown("""
                 **Zoom and Relayout Data**
-
-                Click and drag on the graph to zoom or click on the zoom
-                buttons in the graph's menu bar.
-                Clicking on legend items will also fire
-                this event.
             """),
             html.Pre(id='relayout-data', style=styles['pre']),
-        ], className='three columns')
+        ], className='five columns')
     ])
 ])
 
-
-@app.callback(
-    Output('hover-data', 'children'),
-    Input('basic-interactions', 'hoverData'))
-def display_hover_data(hoverData):
-    return json.dumps(hoverData, indent=2)
-
-
-@app.callback(
-    Output('click-data', 'children'),
-    Input('basic-interactions', 'clickData'))
-def display_click_data(clickData):
-    return json.dumps(clickData, indent=2)
-
-
+# call backs
 @app.callback(
     Output('selected-data', 'children'),
     Input('basic-interactions', 'selectedData'))
 def display_selected_data(selectedData):
-    return json.dumps(selectedData, indent=2)
+    coord_list = []
+    for i in selectedData['points']:
+        coord_list.append((i['lat'], i['lon']))
+    return coord_list[0]
 
 
 @app.callback(
@@ -111,4 +71,4 @@ def display_relayout_data(relayoutData):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8010)
