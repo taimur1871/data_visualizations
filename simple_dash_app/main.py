@@ -7,6 +7,7 @@ from dash_html_components.Div import Div
 import plotly.express as px
 
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv('./data/Mid-Con ToolRun.csv')
 
@@ -90,7 +91,7 @@ def update_figure(application, bit_size):
 
     fig = px.scatter_mapbox(filtered_df, lat='Latitude', lon='Longitude', 
                             hover_data=['Official Well Name'], 
-                            color_discrete_sequence=["red"],zoom=6)
+                            color_discrete_sequence=["black"],zoom=8)
 
     fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(clickmode='event+select')
@@ -98,13 +99,18 @@ def update_figure(application, bit_size):
 
     return fig
 
-# function for the scatter plot tied to map
 @app.callback(
     Output('graph-with-slider', 'figure'),
     Input('year-slider', 'value'),
     Input('application', 'value'))
 def update_figure(bit_size, dir_type):
     filtered_df = df[(df['Bit Size'] == bit_size) & (df['Dir Type']==dir_type)]
+    #df_coord = pd.DataFrame(coord['points'])
+    #df_val = df_coord[['lon','lat']].drop_duplicates()
+    
+    #convert coord to np
+    #coord_np = df_val.to_numpy()
+    #filtered_df = np.where(coord_np in filtered_df)
 
     fig = px.scatter(filtered_df, x="Distance", y="ROP", color="Bit Mfg")
 

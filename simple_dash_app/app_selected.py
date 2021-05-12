@@ -21,7 +21,7 @@ styles = {
 df = pd.read_csv('/home/taimur/Documents/DarkCirrus Projects/Analyzing Bit Records/data_visualizations/simple_dash_app/data/Mid-Con ToolRun.csv')
 
 fig = px.scatter_mapbox(df, lat='Latitude', lon='Longitude', hover_data=['Official Well Name'],
-                    color_discrete_sequence=["red"],zoom=10)
+                    color_discrete_sequence=["black"],zoom=10)
 
 fig.update_layout(mapbox_style="open-street-map")
 fig.update_layout(clickmode='event+select')
@@ -57,10 +57,11 @@ app.layout = html.Div([
     Output('selected-data', 'children'),
     Input('basic-interactions', 'selectedData'))
 def display_selected_data(selectedData):
-    coord_list = []
-    for i in selectedData['points']:
-        coord_list.append((i['lat'], i['lon']))
-    return coord_list[0]
+    df_coord = pd.DataFrame(selectedData['points'])
+    df_val = df_coord[['lon','lat']].drop_duplicates()
+    #for i in selectedData['points']:
+    #    coord_list.append((i['lat'], i['lon']))
+    return df_val.to_json()
 
 
 @app.callback(
