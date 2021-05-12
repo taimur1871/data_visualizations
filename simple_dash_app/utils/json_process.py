@@ -61,4 +61,4 @@ js = {
 #for i in js['points']:
 #    print(i['lon'])
 
-df = pd.DataFrame(js['points'])
+#df = pd.DataFrame(js['points'])

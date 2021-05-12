@@ -15,6 +15,7 @@ df = pd.read_csv('./data/Mid-Con ToolRun.csv')
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.config["suppress_callback_exceptions"] = True
 
 app.layout = html.Div(
     [
@@ -22,7 +23,7 @@ app.layout = html.Div(
             html.H3('Bit Offset Analysis')
             ),
         html.Div(
-            [
+            children=[                
                 dcc.RadioItems(
                     id='application',
                     options=[{'label':i, 'value':i} for i in df['Dir Type'].unique()],
@@ -93,24 +94,27 @@ def update_figure(application, bit_size):
                             hover_data=['Official Well Name'], 
                             color_discrete_sequence=["black"],zoom=8)
 
-    fig.update_layout(mapbox_style="open-street-map")
-    fig.update_layout(clickmode='event+select')
-    fig.update_layout(transition_duration=0)
+    fig.update_layout(mapbox_style="open-street-map",
+                    clickmode='event+select',
+                    transition_duration=0
+                    )
+    #fig.update_layout(clickmode='event+select')
+    #fig.update_layout(transition_duration=0)
 
     return fig
 
 @app.callback(
     Output('graph-with-slider', 'figure'),
     Input('year-slider', 'value'),
-    Input('application', 'value'))
-def update_figure(bit_size, dir_type):
-    filtered_df = df[(df['Bit Size'] == bit_size) & (df['Dir Type']==dir_type)]
-    #df_coord = pd.DataFrame(coord['points'])
-    #df_val = df_coord[['lon','lat']].drop_duplicates()
+    Input('map-w-radio', 'selectedData'))
+def update_figure(bit_size, coord):
+    filtered_df = df[(df['Bit Size'] == bit_size)]
+    df_coord = pd.DataFrame(coord['points'])
+    df_val = df_coord[['lon','lat']].drop_duplicates()
     
     #convert coord to np
-    #coord_np = df_val.to_numpy()
-    #filtered_df = np.where(coord_np in filtered_df)
+    coord_np = df_val.to_numpy()
+    filtered_df = filtered_df[filtered_df.Longitude.isin(coord_np[:,0])]
 
     fig = px.scatter(filtered_df, x="Distance", y="ROP", color="Bit Mfg")
 
